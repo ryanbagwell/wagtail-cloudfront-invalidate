@@ -1,12 +1,15 @@
-# wagtail-cloudfront-invalidate
+wagtail-cloudfront-invalidate
+=============================
 
 A Wagtail hook to invalidate a path when a page is updated
 
-## Installation:
+Installation::
+--------------
 
     pip install wagtail-cloudfront-invalidate
 
-## Configuration:
+Configuration::
+---------------
 
     INSTALLED_APPS = [
         'wagtail_cloudfront_invalidate'
