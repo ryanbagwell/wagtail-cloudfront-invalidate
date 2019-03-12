@@ -1,0 +1,1 @@
+default_app_config = 'wagtail_cloudfront_invalidate.apps.WagtailCloudfrontInvalidateConfig'
