@@ -4,6 +4,7 @@ from botocore.exceptions import ParamValidationError
 import boto3
 from wagtail.admin import messages
 from django.utils.translation import ugettext as _
+import time
 
 
 @hooks.register('after_edit_page')
@@ -30,7 +31,7 @@ def my_hook_function(request, page):
                         page.get_url(),
                     ]
                 },
-                'CallerReference': conf.verbose_name,
+                'CallerReference': 'wagtail-invalidate-%s' % time.time()
             }
         )
     except ParamValidationError:
