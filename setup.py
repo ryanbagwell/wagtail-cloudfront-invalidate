@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='wagtail-cloudfront-invalidate',
-  version='1.1.0',
+  version='1.1.1',
   description="A wagtail hook to invalidate AWS's CloudFront cache when a page is updated",
   long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
   author='Ryan Bagwell',
