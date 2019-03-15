@@ -1,8 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
-import logging
-
-logger = logging.getLogger(__name__)
+from wagtail_cloudfront_invalidate.invalidate import invalidate
+from . import wci_logger
 
 
 class WagtailCloudfrontInvalidateConfig(AppConfig):
@@ -25,7 +24,25 @@ class WagtailCloudfrontInvalidateConfig(AppConfig):
 
         for attr in ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'CLOUDFRONT_DISTRIBUTION_ID']:
             if getattr(self, attr) is None:
-                logger.info('Please set a value for %s' % attr)
+                wci_logger.info('Please set a value for %s' % attr)
                 return False
 
         return True
+
+    def ready(self):
+
+        if self.enabled:
+            try:
+
+                invalidate(
+                    self.AWS_ACCESS_KEY_ID,
+                    self.AWS_SECRET_ACCESS_KEY,
+                    self.CLOUDFRONT_DISTRIBUTION_ID,
+                    paths=['/*'],
+                )
+
+            except Exception as err:
+                wci_logger.info(err.__str__())
+
+        else:
+            wci_logger.info('Cloudfront invalidate not enabled')

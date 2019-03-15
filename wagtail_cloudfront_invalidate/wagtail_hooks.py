@@ -1,10 +1,9 @@
 from wagtail.core import hooks
 from django.apps import apps
 from botocore.exceptions import ParamValidationError
-import boto3
 from wagtail.admin import messages
 from django.utils.translation import ugettext as _
-import time
+from wagtail_cloudfront_invalidate.invalidate import invalidate
 
 
 @hooks.register('after_edit_page')
@@ -15,25 +14,17 @@ def my_hook_function(request, page):
     if not conf.enabled:
         return
 
-    client = boto3.client(
-        'cloudfront',
-        aws_access_key_id=conf.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=conf.AWS_SECRET_ACCESS_KEY
-    )
-
     try:
-        client.create_invalidation(
-            DistributionId=conf.CLOUDFRONT_DISTRIBUTION_ID,
-            InvalidationBatch={
-                'Paths': {
-                    'Quantity': 1,
-                    'Items': [
-                        page.get_url(),
-                    ]
-                },
-                'CallerReference': 'wagtail-invalidate-%s' % time.time()
-            }
+
+        invalidate(
+            conf.AWS_ACCESS_KEY_ID,
+            conf.AWS_SECRET_ACCESS_KEY,
+            conf.CLOUDFRONT_DISTRIBUTION_ID,
+            items=[
+                page.get_url(),
+            ]
         )
+
     except ParamValidationError:
         messages.warning(
             request,
